@@ -7,6 +7,8 @@ FastApi app with Docker + PostgreSQL study example
 - дождаться установки всех библиотек и сборки проекта (`Installing the current project: project (0.1.0)`)
 - в терминале прописать docker compose up
 - дождаться пока база данных будет готова (`database system is ready to accept connections`)
+- подключиться к базе (DBeaver, DataGrip, PGadmin и т.д.)
+- выполнить в базе скрипты из папки scripts для создания схемы и таблицы
 - запустить файл src/project/main.py
 - При успешном запуске будет написано:
   - `INFO:     Application startup complete.`

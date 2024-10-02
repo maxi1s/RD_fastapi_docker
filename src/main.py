@@ -37,9 +37,9 @@ def create_app() -> FastAPI:
 
 app = create_app()
 
-
+#При 0.0.0.0 через консоль автоматически не подключалось
 async def run() -> None:
-    config = uvicorn.Config("main:app", host="0.0.0.0", port=8000, reload=False)
+    config = uvicorn.Config("main:app", host="127.0.0.1", port=8000, reload=False)
     server = uvicorn.Server(config=config)
     tasks = (
         asyncio.create_task(server.serve()),
