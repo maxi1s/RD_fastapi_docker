@@ -1,4 +1,6 @@
 # fastapi_docker_postgres_example
+
+Работа по предмету Технологии программирования (React-JS и Docker)
 FastApi app with Docker + PostgreSQL study example
 
 Порядок запуска приложения:
