@@ -44,11 +44,11 @@ async def run() -> None:
     tasks = (
         asyncio.create_task(server.serve()),
     )
-
     await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
 
 
 if __name__ == "__main__":
     logger.debug(f"{settings.postgres_url}=")
     loop = asyncio.get_event_loop()
+    print("http://localhost:8000/docs")
     loop.run_until_complete(run())
