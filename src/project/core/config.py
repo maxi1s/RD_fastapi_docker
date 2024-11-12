@@ -3,7 +3,6 @@ from pydantic import SecretStr
 
 
 class Settings(BaseSettings):
-    # TODO убрать значения по умолчанию при переносе приложения в Docker
     ORIGINS: str = "*"
     ROOT_PATH: str = ""
     ENV: str = "DEV"
