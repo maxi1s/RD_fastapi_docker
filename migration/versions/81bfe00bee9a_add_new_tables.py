@@ -20,21 +20,23 @@ depends_on = None
 
 def upgrade():
     op.create_table('studies',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String().with_variant(sa.String(length=255), 'postgresql'), nullable=False),
-    sa.PrimaryKeyConstraint('id'),
-    schema=settings.POSTGRES_SCHEMA
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('name', sa.String().with_variant(sa.String(length=255), 'postgresql'), nullable=False),
+        sa.PrimaryKeyConstraint('id'),
+        schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('user_marks',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('mark', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('study_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['study_id'], ['my_app_schema.studies.id'], onupdate='CASCADE', ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['user_id'], ['my_app_schema.users.id'], onupdate='CASCADE', ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id'),
-    schema=settings.POSTGRES_SCHEMA
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('mark', sa.Integer(), nullable=False),
+        sa.Column('user_id', sa.Integer(), nullable=False),
+        sa.Column('study_id', sa.Integer(), nullable=False),
+        sa.ForeignKeyConstraint(['study_id'], ['my_app_schema.studies.id'], onupdate='CASCADE', ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['user_id'], ['my_app_schema.users.id'], onupdate='CASCADE', ondelete='CASCADE'),
+        sa.PrimaryKeyConstraint('id'),
+        schema=settings.POSTGRES_SCHEMA
     )
+    
+
 
 
 def downgrade():
