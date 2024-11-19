@@ -9,6 +9,10 @@ class FlowerRepository:
     async def get_flowers(self, session: AsyncSession):
         result = await session.execute(select(Flowers))
         flowers = result.scalars().all()
+        return [FlowerSchema(flower) for flower in flowers]
+    async def get_all_flowers(self, session: AsyncSession):
+        result = await session.execute(select(Flowers))
+        flowers = result.scalars().all()
         return [FlowerSchema.from_orm(flower) for flower in flowers]
 
     async def get_flower_by_name(self, session: AsyncSession, name: str):
@@ -26,19 +30,17 @@ class FlowerRepository:
         return FlowerSchema.from_orm(flower)
 
     async def create_flower(self, session: AsyncSession, flower_data: FlowerCreateSchema) -> FlowerSchema:
-        query = (
-            insert(Flowers)
-            .values(flower_data.dict())
-            .returning(Flowers)
+        existing_flower = await session.execute(
+            select(Flowers).where(Flowers.name == flower_data.name)
         )
+        if existing_flower.scalar_one_or_none():
+            raise FlowerAlreadyExists(f"Цветок с именем '{flower_data.name}' уже существует")
 
-        try:
-            created_flower = await session.scalar(query)
-            await session.flush()
-        except IntegrityError:
-            raise FlowerAlreadyExists(flower_data.name)
-
-        return FlowerSchema.from_orm(created_flower)
+        new_flower = Flowers(**flower_data.dict())
+        session.add(new_flower)
+        await session.commit()
+        await session.refresh(new_flower)
+        return FlowerSchema.from_orm(new_flower)
 
     async def update_flower(self, session: AsyncSession, flower_id: int, flower_data: FlowerCreateSchema):
         result = await session.execute(select(Flowers).where(Flowers.id == flower_id))

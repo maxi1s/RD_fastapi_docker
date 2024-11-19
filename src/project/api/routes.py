@@ -14,17 +14,17 @@ async def get_flowers() -> list[FlowerSchema]:
             all_flowers = await flowers_repo.get_all_flowers(session=session)
 
         return all_flowers
-#Баг
-@router.post("/Add_Flower", response_model=FlowerSchema, status_code=status.HTTP_201_CREATED)
-async def add_flower(
-    flower_dto: FlowerCreateSchema,
-) -> FlowerSchema:
-    try:
-        async with database.session() as session:
-            new_flower = await flowers_repo.create_flower(session=session, flower_data=flower_dto)
-    except FlowerAlreadyExists as error:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=error.message)
-    return new_flower
+#Криво но уже работае.
+@router.post("/add_flower", response_model=FlowerSchema, status_code=status.HTTP_201_CREATED)
+async def add_flower(flower_data: FlowerCreateSchema,) -> FlowerSchema:
+        try:
+            async with database.session() as session:
+                new_flower = await flowers_repo.create_flower(session=session, flower_data=flower_data)
+        except FlowerAlreadyExists as error:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=error.message)
+
+        return new_flower
+
 
 @router.get("/healthcheck", response_model=HealthCheckSchema, status_code=status.HTTP_200_OK)
 async def check_health() -> HealthCheckSchema:
