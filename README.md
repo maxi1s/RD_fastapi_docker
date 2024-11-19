@@ -12,4 +12,4 @@ FastApi app with Docker + PostgreSQL study example
 
 
 Swagger:
-- после успешного запуска приложения, по адресу http://localhost:8020/docs будет доступен swagger
+- после успешного запуска приложения, по адресу http://localhost:8000/docs будет доступен swagger
