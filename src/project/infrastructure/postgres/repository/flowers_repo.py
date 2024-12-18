@@ -1,16 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert, update, delete
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from project.infrastructure.postgres.models import Flowers
-from project.schemas.flowers import FlowerCreateSchema, FlowerSchema
+from project.schemas.flowers import FlowerCreateUpdateSchema
 from project.core.exceptions import FlowerNotFound, FlowerAlreadyExists
 
 class FlowerRepository:
     async def get_flowers(self, session: AsyncSession):
-        result = await session.execute(select(Flowers))
-        flowers = result.scalars().all()
-        return [FlowerSchema(flower) for flower in flowers]
-    async def get_all_flowers(self, session: AsyncSession):
         result = await session.execute(select(Flowers))
         flowers = result.scalars().all()
         return [FlowerSchema.from_orm(flower) for flower in flowers]
@@ -19,14 +15,14 @@ class FlowerRepository:
         result = await session.execute(select(Flowers).where(Flowers.name == name))
         flower = result.scalar_one_or_none()
         if flower is None:
-            raise FlowerNotFound("Цветок с именем '{name}' не найден")
+            raise FlowerNotFound(name=name)
         return FlowerSchema.from_orm(flower)
 
     async def get_flower_by_id(self, session: AsyncSession, flower_id: int):
         result = await session.execute(select(Flowers).where(Flowers.id == flower_id))
         flower = result.scalar_one_or_none()
         if flower is None:
-            raise FlowerNotFound("Цветок с id {flower_id} не найден")
+            raise FlowerNotFound(_id=flower_id)
         return FlowerSchema.from_orm(flower)
 
     async def create_flower(self, session: AsyncSession, flower_data: FlowerCreateSchema) -> FlowerSchema:
@@ -34,7 +30,7 @@ class FlowerRepository:
             select(Flowers).where(Flowers.name == flower_data.name)
         )
         if existing_flower.scalar_one_or_none():
-            raise FlowerAlreadyExists(f"Цветок с именем '{flower_data.name}' уже существует")
+            raise FlowerAlreadyExists(name=flower_data.name)
 
         new_flower = Flowers(**flower_data.dict())
         session.add(new_flower)
@@ -46,7 +42,7 @@ class FlowerRepository:
         result = await session.execute(select(Flowers).where(Flowers.id == flower_id))
         flower = result.scalar_one_or_none()
         if flower is None:
-            raise FlowerNotFound("Цветок с id {flower_id} не найден")
+            raise FlowerNotFound(_id=flower_id)
 
         for key, value in flower_data.dict().items():
             setattr(flower, key, value)
@@ -56,7 +52,7 @@ class FlowerRepository:
             await session.refresh(flower)
         except IntegrityError:
             await session.rollback()
-            raise FlowerAlreadyExists(flower_data.name)
+            raise FlowerAlreadyExists(name=flower_data.name)
 
         return FlowerSchema.from_orm(flower)
 
@@ -64,7 +60,7 @@ class FlowerRepository:
         result = await session.execute(select(Flowers).where(Flowers.id == flower_id))
         flower = result.scalar_one_or_none()
         if flower is None:
-            raise FlowerNotFound("Цветок с id {flower_id} не найден")
+            raise FlowerNotFound(_id=flower_id)
 
         await session.delete(flower)
         await session.commit()

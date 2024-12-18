@@ -5,11 +5,10 @@ class ProviderFlowerCreateSchema(BaseModel):
     stock: int | None
     date: date
     flower_id: int
-    company_name: str 
-    contact_info: str | None
+    provider_id: int 
 
 class ProviderFlowerSchema(ProviderFlowerCreateSchema):
-    ProviderFlowersID: int
+    provider_flowers_id: int
 
     class Config:
         orm_mode = True
