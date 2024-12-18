@@ -60,6 +60,7 @@ class Flowers(Base):
     lifespan: Mapped[int] = mapped_column('FlowerLifeSpan', Integer)
     stock: Mapped[int] = mapped_column('FlowerStock', Integer)
     provider_flower_id: Mapped[int] = mapped_column('ProviderFlowerID', Integer, ForeignKey('provider_flowers.ProviderFlowersID'))
+    flower_price: Mapped[int] = mapped_column('FlowerPrice', Integer)
 
 class FlowersPurchase(Base):
     __tablename__ = 'flowers_purchase'

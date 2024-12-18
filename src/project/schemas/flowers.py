@@ -6,6 +6,7 @@ class FlowerCreateSchema(BaseModel):
     lifespan: int
     stock: int
     provider_flower_id: int | None
+    flower_price: float
 
 class FlowerSchema(FlowerCreateSchema):
     id: int

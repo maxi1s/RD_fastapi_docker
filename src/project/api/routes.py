@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 
 from project.schemas.user import UserSchema, UserCreateUpdateSchema
 from project.schemas.healthcheck import HealthCheckSchema
-from project.core.exceptions import UserNotFound, UserAlreadyExists, FlowerAlreadyExists
+from project.core.exceptions import UserNotFound, UserAlreadyExists, FlowerAlreadyExists, FlowerNotFound
 from project.schemas.flowers import FlowerSchema, FlowerCreateSchema
 from project.api.depends import database, user_repo, flowers_repo
 
@@ -14,6 +14,16 @@ async def get_flowers() -> list[FlowerSchema]:
             all_flowers = await flowers_repo.get_all_flowers(session=session)
 
         return all_flowers
+
+@router.get("/flower/{flower_id}", response_model=FlowerSchema, status_code=status.HTTP_200_OK)
+async def get_flower_by_id(flower_id: int) -> FlowerSchema:
+    try:
+        async with database.session() as session:
+            flower = await flowers_repo.get_flower_by_id(session=session, flower_id=flower_id)
+    except FlowerNotFound as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.message)
+
+    return flower
 #Криво но уже работае.
 @router.post("/add_flower", response_model=FlowerSchema, status_code=status.HTTP_201_CREATED)
 async def add_flower(flower_data: FlowerCreateSchema,) -> FlowerSchema:
@@ -25,7 +35,28 @@ async def add_flower(flower_data: FlowerCreateSchema,) -> FlowerSchema:
 
         return new_flower
 
+@router.put("/update_flower/{flower_id}", response_model=FlowerSchema, status_code=status.HTTP_200_OK)
+async def update_flower(flower_id: int, flower_data: FlowerCreateSchema) -> FlowerSchema:
+    try:
+        async with database.session() as session:
+            updated_flower = await flowers_repo.update_flower(
+                session=session,
+                flower_id=flower_id,
+                flower_data=flower_data
+            )
+    except FlowerNotFound as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.message)
 
+    return updated_flower
+
+@router.delete("/delete_flower/{flower_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_flower(flower_id: int) -> None:
+    try:
+        async with database.session() as session:
+            await flowers_repo.delete_flower(session=session, flower_id=flower_id)
+    except FlowerNotFound as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.message)
+    
 @router.get("/healthcheck", response_model=HealthCheckSchema, status_code=status.HTTP_200_OK)
 async def check_health() -> HealthCheckSchema:
     async with database.session() as session:

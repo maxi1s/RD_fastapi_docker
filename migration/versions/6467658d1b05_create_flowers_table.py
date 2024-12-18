@@ -97,6 +97,7 @@ def upgrade():
     sa.Column('FlowersName', sa.String(length=255), nullable=False),
     sa.Column('FlowerLifeSpan', sa.Integer(), nullable=False),
     sa.Column('FlowerStock', sa.Integer(), nullable=False),
+    sa.Column('FlowerPrice', sa.Integer(), nullable=False),
     sa.Column('ProviderFlowerID', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['ProviderFlowerID'], ['my_app_schema.provider_flowers.ProviderFlowersID'], ),
     sa.PrimaryKeyConstraint('FlowersID'),
